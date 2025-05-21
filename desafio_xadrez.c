@@ -60,5 +60,6 @@ int main() {
             j++; // força a saída do loop após uma execução
         }
     }
+    printf("\n");
     return 0;
 }
