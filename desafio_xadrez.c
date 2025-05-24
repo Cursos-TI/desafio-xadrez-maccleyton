@@ -1,65 +1,83 @@
 #include <stdio.h>
 
 // Coordenas do Tabuleiro: Colunas (a, b, c, d, e, f, g, h). Linhas (1, 2, 3, 4, 5, 6, 7, 8).
+// Código anterior movido para xadrez.c
 
-int main() { 
-    int i, j;
-    char coluna = 'a';
-    int linha = 1;
-
-    // Torre: Move-se 5 casas à direita (coluna aumenta).
-    i = 1;
-    coluna = 'a';
-    printf("Torre: Posição inicial (a1)\n");
-    while (i <= 5) {
-        coluna++; // Move a colua de 'a' para 'b', 'c', ...
+// Torre: move-se cinco casas para a direita
+void torre(int casas, char coluna, int linha) {
+    if (casas > 0) {
+        coluna++; // Move a peça uma coluna à direita
         printf("Direita -> %c%d\n", coluna, linha);
-        i++;
+        torre(casas - 1, coluna, linha);
     }
-    printf("\n");
+}
 
-    // Bispo: Move-se 5 casas na diagonal (coluna e linha aumentam).
-    i = 1;
-    coluna = 'c';
-    linha = 1;
-    printf("Bispo: Posição inicial (c1)\n");
-    do {
-        coluna++; // Move a colua de 'c' para 'd', 'e', ...
-        linha++; // Move a linha de 1 para 2, 3, ...
-        printf("Cima, Direita -> %c%d\n", coluna, linha);
-        i++;
-    } while (i <= 5);
-    printf("\n");
-
-    /* O enunciado pede para movimentar a Rainha 8 casas à esquerda, porém como o tabuleiro tem apenas
-    8x8 casas, limitei o movimento em 7 casas para não ultrapassar os limites do tabuleiro */
-
-    // Rainha: Move-se 7 casas à esquerda (coluna diminui).
-    coluna = 'h';
-    linha = 3;
-    printf("Rainha: Posição inicial (h3)\n");
-    for (i = 1; i <= 7; i++) {
-        coluna--; // Move a colua de 'h' para 'g', 'f', ...
-        printf("Esquerda -> %c%d\n", coluna, linha);
-    }
-    printf("\n");
-
-    // Cavalo: Move-se 2 casas para baixo e 1 casa à esquerda (coluna diminui).
-    // for para loop externo - while para loop interno
-    coluna = 'f';
-    linha = 8;
-    printf("Cavalo: Posição inicial (f8)\n");
-    for (i = 1; i <= 2; i++) {
-        linha--; // move a linha de 8 para 7, 6...
-        printf("Baixo -> %c%d\n", coluna, linha);
-
-        j = i;
-        while (j == 2) {
-            coluna--;
-            printf("Esquerda -> %c%d\n", coluna, linha);
-            j++; // força a saída do loop após uma execução
+void bispo(int casas, char coluna, int linha, int passo) {
+    // Loop aninhado para controle horizontal
+    for (int h = 1; h <= casas; h++) {
+        // Condição para movimento diagonal (h == passo)
+        if (h == passo) {
+            char nova_coluna = coluna + h;
+            int nova_linha = linha + passo;
+            printf("Cima, Direita -> %c%d\n", nova_coluna, nova_linha);
         }
     }
+
+    // Parte recursiva (controle vertical)
+    if (passo < casas) {
+        bispo(casas, coluna, linha, passo + 1);
+    }
+}
+
+// Obs. Se mover a rainha 8 casas como solicitado, vai ultrapassar os limites do tabuleiro
+void rainha(int casas, char coluna, int linha) { // 7 casas para a esquerda
+    if (casas > 0) {
+        coluna--; // Move a peça uma coluna à esquerda
+        printf("Esquerda -> %c%d\n", coluna, linha);
+        rainha(casas -1, coluna, linha);
+    }
+
+}
+
+// Cavalo: move-se 2 casas para cima e 1 casa à direita (coluna aumenta).
+void cavalo(int casas, char coluna, int linha) {
+    if (casas > 0) {
+
+        for (int i = 1; i <= 2; i++) { // for para loop externo - while para loop interno
+            linha++; // move para cima
+            printf("Cima -> %c%d\n", coluna, linha);
+
+            int j = 1;
+            while (j <= 1) {
+                if (i != 2) {  // Só move na segunda iteração vertical
+                    j++;
+                    continue;  // Pula para próxima iteração
+                }
+                
+                coluna++; // Move para direita
+                printf("Direita -> %c%d\n", coluna, linha);
+                break; // Força a saída após mover
+            }
+        }
+    }   
+}    
+
+int main() {
+    printf("Torre: Posição inicial (a1)\n"); // Posição inicial da peça
+    torre(5, 'a', 1); // Quantidade de casas a mover, e coordenadas da posição inicial da peça
+
+    printf("\n"); // Pula uma linha antes do início do movimento da peça
+    printf("Bispo: Posição inicial (c1)\n");
+    bispo(5, 'c', 1, 1);
+
     printf("\n");
+    printf("Rainha: Posição inicial (h3)\n");
+    rainha(7, 'h', 3);
+
+    printf("\n");
+    printf("Cavalo: Posição inicial (f8)\n");
+    cavalo(2, 'f', 8);
+    printf("\n");
+
     return 0;
 }
